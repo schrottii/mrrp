@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MRRP</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <link href="styles.css" rel="stylesheet" type="text/css">
+    <link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+</head>
+<body>
+    <div style="text-align: center">
+        <h3>Schrottii's <span id="header"></span></h3>
+        <img src="images/mrrp.png" style="width: 20%; max-width: 256px;" />
+        <!-- This work is copyrighted. Copying, cloning or stealing is prohibited. -->
+
+        <h3>Current Leaderboard</h3>
+        <span id="leaderboardTable"></span>
+        <button onclick="addTeam()">Add Team</button>
+        <button onclick="removeTeam()">Remove Team</button>
+
+        <h3>Update Points</h3>
+        <h4>Add new score</h4>
+        <span id="scoreTeams"></span>
+
+        <h4>Scores this update</h4>
+        <span id="scores"></span>
+        <br />
+        <button onclick="saveUpdate()">Save update to data</button>
+        <button onclick="clearUpdate()">Clear</button>
+
+        <h3>Settings</h3>
+        Data is auto saved every second, but you can export it to share or as backup (clearing cache removes it): <br />
+        <button onclick="saveExport()"><b>Export Data</b><br />Saves current data to clipboard</button>
+        <button onclick="saveImport()"><b>Import Data</b><br />Loads data from clipboard</button>
+    </div>
+
+    <!-- LOAD SCRIPTS -->
+    <script src="code/save.js"></script>
+    <script src="code/tables.js"></script>
+    <script src="code/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+body {
+    background-color: rgb(50, 120, 50);
+    /*background-image: url(images/bg.png);
+    background-size: cover; */
+    color: rgb(8, 26, 8);
+    font-size: 20px;
+    text-align: center;
+    font-family: OSB;
+}
+
+@font-face {
+    font-family: OSB;
+    src: url(font.ttf) format('truetype');
+}
+
+ul {
+    margin-top: 1px;
+    margin-bottom: 1px;
+}
+
+h1 {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+h3 {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+a {
+    color: black;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    border-color: darkgreen;
+    border: 4px;
+    border-radius: 8px;
+    width: 98%;
+    max-width: 960px;
+}
+
+th {
+    background-color: lightgray;
+    color: black;
+}
+
+td {
+    background-color: white;
+    color: black;
+    transition-duration: 0.4s;
+}
+
+    td:hover {
+        filter: brightness(75%);
+    }
+
+input {
+    border-color: red;
+    border-width: 4px;
+    font-size: 28px;
+}
+
+button {
+    background-color: rgb(80, 180, 80);
+    border-width: 4px;
+    border-color: rgb(30, 100, 30);
+    border-radius: 12px;
+    font-size: 20px;
+    min-height: 64px;
+    transition-duration: 0.4s;
+}
+
+    button:hover {
+        filter: brightness(150%);
+    }
