@@ -12,7 +12,7 @@ const patch_notes = {
 - Release
 `,
     "v1.1": `
-MRRP v1.1 2025-01-18
+MRRP v1.1 2026-01-18
 -> Scores this update:
 - Now shows amount of scores
 - Now shows if they have been updated onto the table yet
@@ -28,6 +28,6 @@ MRRP v1.1 2025-01-18
 - Changed table colors (less bright, more green)
 - Added lines to separate sections
 - Added support for patch notes
-- Added Setting to export to a file (ie MRRP_backup_777P_2025-01-18)
+- Added Setting to export to a file (ie MRRP_backup_777P_2026-01-18)
 `
 }
