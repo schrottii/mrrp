@@ -21,24 +21,37 @@
         <span id="leaderboardTable"></span>
         <button onclick="addTeam()">Add Team</button>
         <button onclick="removeTeam()">Remove Team</button>
+        <hr />
 
         <h3>Update Points</h3>
         <h4>Add new score</h4>
         <span id="scoreTeams"></span>
+        <hr />
 
         <h4>Scores this update</h4>
+        <span id="scoresInfo"></span>
+        <button onclick="toggleCopyable();">Toggle copyable</button> <br />
         <span id="scores"></span>
         <br />
         <button onclick="saveUpdate()">Save update to data</button>
         <button onclick="clearUpdate()">Clear</button>
+        <hr />
 
         <h3>Settings</h3>
         Data is auto saved every second, but you can export it to share or as backup (clearing cache removes it): <br />
         <button onclick="saveExport()"><b>Export Data</b><br />Saves current data to clipboard</button>
         <button onclick="saveImport()"><b>Import Data</b><br />Loads data from clipboard</button>
+        <button onclick="saveExportFile()"><b>Export File</b><br />Exports to file, update lb first</button>
+        <hr />
+
+        <h3>Patch notes</h3>
+        <div style="text-align: left;">
+            <span id="patchnotes"></span>
+        </div>
     </div>
 
     <!-- LOAD SCRIPTS -->
+    <script src="code/patchnotes.js"></script>
     <script src="code/save.js"></script>
     <script src="code/tables.js"></script>
     <script src="code/main.js"></script>

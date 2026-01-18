@@ -32,23 +32,26 @@ a {
     color: black;
 }
 
+hr {
+    color: lime;
+    max-width: 69%;
+}
+
 table {
     margin-left: auto;
     margin-right: auto;
-    border-color: darkgreen;
-    border: 4px;
-    border-radius: 8px;
     width: 98%;
     max-width: 960px;
+    background-color: darkslategray;
 }
 
 th {
-    background-color: lightgray;
+    background-color: rgb(148, 180, 148);
     color: black;
 }
 
 td {
-    background-color: white;
+    background-color: rgb(210, 244, 210);
     color: black;
     transition-duration: 0.4s;
 }

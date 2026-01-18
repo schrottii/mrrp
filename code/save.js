@@ -50,3 +50,23 @@ function saveLoadBackup() {
 
     saveLoad(ssave);
 }
+
+function today() {
+    let date = new Date();
+    let month = (date.getUTCMonth() + 1);
+    if (month < 10) month = "0" + month;
+    return date.getUTCFullYear() + "-" + month + "-" +  date.getUTCDate();
+}
+
+function saveExportFile() {
+    let temporaryFile = document.createElement('a');
+    temporaryFile.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(saveSave()));
+    temporaryFile.setAttribute('download', "MRRP_backup_" + save.leaderboard[0][1] + "P_" + today() + ".txt");
+
+    temporaryFile.style.display = 'none';
+    document.body.appendChild(temporaryFile);
+
+    temporaryFile.click();
+
+    document.body.removeChild(temporaryFile);
+}

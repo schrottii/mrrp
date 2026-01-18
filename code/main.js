@@ -2,7 +2,9 @@ var ui = {
     header: document.getElementById("header"),
     leaderboardTable: document.getElementById("leaderboardTable"),
     scoreTeams: document.getElementById("scoreTeams"),
-    scores: document.getElementById("scores")
+    scores: document.getElementById("scores"),
+    scoresInfo: document.getElementById("scoresInfo"),
+    patchnotes: document.getElementById("patchnotes")
 };
 
 function getTeam(name) {
@@ -229,6 +231,12 @@ function updateTempLB(score) {
     lbUpdated = false;
 }
 
+var copyableScores = false;
+function toggleCopyable() {
+    copyableScores = !copyableScores;
+    updateScores();
+}
+
 function updateScores() {
     if (save.update.length == 0) {
         ui.scores.innerHTML = "";
@@ -249,14 +257,31 @@ function updateScores() {
     for (let t in save.leaderboard) {
         teamScores[save.leaderboard[t][0]] = parseInt(save.leaderboard[t][1]);
     }
-    console.log(teamScores);
+
+    let oldScore;
+    let newScore;
+    let isBig = false;
     for (let s in save.update) {
-        score = save.update[s];
-        //console.log(Math.floor((teamScores[score[1]] + parseInt(score[0])) / 25), Math.floor(teamScores[score[1]] / 25));
-        if (Math.floor((teamScores[score[1]] + parseInt(score[0])) / 25) > Math.floor(teamScores[score[1]] / 25)) {
+        score = save.update[s]; // what they gain
+        oldScore = teamScores[score[1]];
+        newScore = (oldScore + parseInt(score[0]));
+
+        if (Math.floor(newScore / 25) > Math.floor(teamScores[score[1]] / 25)) {
             // every 25
-            render = render + "<br />" + score[1] + " have reached " + (Math.floor((teamScores[score[1]] + parseInt(score[0])) / 25) * 25) + " points :tada:";
+            isBig = (Math.floor(newScore / 25) % 4) == 0;
+            render = render + "<br />"
+                + (isBig ? "**" : "")
+                + score[1] + " have reached " + (Math.floor(newScore / 25) * 25) + " points :tada:"
+                + (isBig ? "**" : "");
         }
+
+        if ((newScore % 1000 >= 777 && oldScore % 1000 < 777) || newScore.toString().includes("777")) {
+            render = render + "<br />:slot_machine:"
+                + score[1] + " has reached "
+                + (newScore.toString().includes("777") ? newScore : Math.floor(newScore / 1000) * 1000 + 777)
+                + " points :slot_machine:";
+        }
+
         teamScores[score[1]] += parseInt(score[0]);
     }
 
@@ -274,6 +299,15 @@ function updateScores() {
             + sep + score[3] + sep + score[4] + sep + score[5] + "<br />";
     }
 
+    // dc formatting in html
+    if (!copyableScores) {
+        render = render.replaceAll(":**", ":</b>");
+        render = render.replaceAll("**", "<b>");
+        render = render.replaceAll(":tada:", "<img src='images/tada.png' height='24px'>");
+        render = render.replaceAll(":slot_machine:", "<img src='images/slot_machine.png' height='24px'>");
+    }
+
+    ui.scoresInfo.innerHTML = save.update.length + " new scores" + ((save.templb.length == 0) ? " (unsaved)" : " (saved)");
     ui.scores.innerHTML = render;
 }
 
@@ -302,12 +336,13 @@ function numberWithCommas(x) {
 
 function updateUI() {
     // UI updating at 15 FPS
-    ui.header.innerHTML = "MRRP v1.0";
 
     renderLeaderboard();
 }
 
 // setup
+ui.header.innerHTML = "MRRP " + VERSION;
+generatePatchNotes();
 saveLoadBackup();
 setInterval("updateUI()", 1000 / 15);
 setInterval("saveBackup()", 1000);
