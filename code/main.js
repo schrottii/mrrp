@@ -271,7 +271,7 @@ function updateScores() {
             isBig = (Math.floor(newScore / 25) % 4) == 0;
             render = render + "<br />"
                 + (isBig ? "**" : "")
-                + score[1] + " have reached " + (Math.floor(newScore / 25) * 25) + " points :tada:"
+                + score[1] + " has reached " + (Math.floor(newScore / 25) * 25) + " points :tada:"
                 + (isBig ? "**" : "");
         }
 
