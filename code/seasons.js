@@ -32,7 +32,7 @@ function calculateSeason8(score) {
     let points = 1;
 
     // 1000 wood, no stone, no gold rules
-    if (parseInt(score[2]) >= parseInt(getTeam(team)[2] + 1000)) points += 1;
+    if (parseInt(score[2]) >= parseInt(getTeam(team)[2]) + 1000) points += 1;
     if (score[3] == getTeam(team)[3]) points += 1;
     if (score[4] == getTeam(team)[4]) points += 1;
 
@@ -49,9 +49,9 @@ function calculateSeason9(score) {
 
     // 1000 wood, max 1 stone, max 1 gold rules
     let prev = getTeam(team);
-    if (parseInt(score[2]) >= parseInt(prev[2] + 500)) points += 1;
-    if (score[3] == prev[3] || score[3] == prev[3] + 1) points += 1;
-    if (score[4] == prev[4] || score[4] == prev[4] + 1) points += 1;
+    if (parseInt(score[2]) >= parseInt(prev[2]) + 500) points += 1;
+    if (score[3] == prev[3] || score[3] == parseInt(prev[3]) + 1) points += 1;
+    if (score[4] == prev[4] || score[4] == parseInt(prev[4]) + 1) points += 1;
 
     // x2 if <24h
     let hours = calcTileHours(score);
