@@ -70,3 +70,17 @@ function saveExportFile() {
 
     document.body.removeChild(temporaryFile);
 }
+
+function hardReset() {
+    if (!confirm("Do you REALLY want this?")) return false;
+
+    save.leaderboard = [];
+    save.update = [];
+    save.templb = [];
+    save.recentTime = "";
+
+    save.teams = undefined;
+
+    lbUpdated = false;
+    renderLeaderboard();
+}

@@ -2,9 +2,11 @@ var ui = {
     header: document.getElementById("header"),
     leaderboardTable: document.getElementById("leaderboardTable"),
     scoreTeams: document.getElementById("scoreTeams"),
+    scorePlayers: document.getElementById("scorePlayers"),
     scores: document.getElementById("scores"),
     scoresInfo: document.getElementById("scoresInfo"),
-    patchnotes: document.getElementById("patchnotes")
+    patchnotes: document.getElementById("patchnotes"),
+    lbSeason: document.getElementById("lbSeason")
 };
 
 function getTeam(name) {
@@ -35,14 +37,29 @@ function addTeam() {
     let input = prompt("name,points,wood,stone,gold");
     input = input.split(",");
 
+    let teamName = input[0];
+
+    for (let t in save.leaderboard) {
+        if (t[0] == teamName) return false;
+    }
+    for (let t in save.teams) {
+        if (t[0] == teamName) return false;
+    }
+
     let team = [];
     for (let i in input) {
         if (i >= 5) return false;
         team.push(input[i]);
     }
 
-    lbUpdated = false;
     lb.push(team);
+    save.teams[teamName] = {
+        name: teamName,
+        logo: "",
+        tiles: 0,
+        players: {}
+    };
+    lbUpdated = false;
 }
 
 function editTeam(team, i) {
@@ -62,6 +79,17 @@ function editTeam(team, i) {
 
     lbUpdated = false;
     lb[team][i] = change;
+}
+
+function teamLogo() {
+    let teamName = prompt("Team name?");
+    if (save.teams[teamName] == undefined) return false;
+
+    let newLogo = prompt("New logo file name + extension? x or leave empty to remove");
+    if (newLogo == "x") newLogo = "";
+
+    save.teams[teamName].logo = newLogo;
+    lbUpdated = false;
 }
 
 function removeTeam() {
@@ -96,7 +124,8 @@ function getLeaderboard() {
             team.push("");
         }
 
-        lb.push([(parseInt(t) + 1), team[1], team[0], team[2], team[3], team[4]]);
+        // pos, points, team name, wood, stone, gold
+        lb.push([(parseInt(t) + 1), team[1], renderTeamName(team[0]), team[2], team[3], team[4]]);
     }
 
     return lb;
@@ -145,25 +174,7 @@ function sortLeaderboard() {
     lbUpdated = false;
 }
 
-// UPDATE STUFF
-function addScore(team) {
-    // select team, then provide extra info
-    let score = prompt("time (dd:hh:mm),wood,stone,gold (x=same)");
-    score = score.split(",");
-    if (score.length < 4) return false;
-
-    for (let s = 1; s <= 3; s++) {
-        if (score[s] == "x" || score[s] == "") score[s] = getTeam(team)[s + 1];
-    }
-
-    score.unshift(team);
-
-    // calculate points
-    let points = 1;
-    if (parseInt(score[2]) >= parseInt(getTeam(team)[2] + 1000)) points += 1;
-    if (score[3] == getTeam(team)[3]) points += 1;
-    if (score[4] == getTeam(team)[4]) points += 1;
-
+function calcTileHours(score) {
     // unholy time calc thing
     let timeA = save.recentTime;
     let timeB = score[1].split(":"); // dd, hh, mm
@@ -184,17 +195,93 @@ function addScore(team) {
         else hours = 420;
     }
 
-    console.log(timeA, timeB, hours);
-    if (hours < 24) points *= 2;
+    save.recentTime = timeB; // do we really want this changed here, and every time?
+    return hours;
+}
+
+// UPDATE STUFF
+function showTeamPlayers(team) {
+    let render = "";
+    let player;
+
+    for (let pl in save.teams[team].players) {
+        player = save.teams[team].players[pl];
+        console.log(pl, player)
+        render = render + "<button onclick='addScore(`" + team + "`, `" + player.name + "`)'>" + player.name + "</button>";
+    }
+
+    render = render + "<button onclick='createPlayer(`" + team + "`)'>Create Player</button>";
+
+    ui.scorePlayers.innerHTML = render;
+}
+
+function createPlayer(team) {
+    let name = prompt("Player name?");
+    if (name == "" || name == undefined || name == false) return false;
+    if (save.teams[team].players[name] != undefined) {
+        alert("This player already exists for this team!");
+        return false;
+    }
+
+    if (save.teams[team].players == undefined) save.teams[team].players = {};
+    save.teams[team].players[name] = {
+        name: name,
+        tiles: 0,
+        points: 0
+    }
+
+    showTeamPlayers(team);
+}
+
+function addScore(team, player) {
+    // select team, then provide extra info
+    let teamsLatest = getLeaderboard();
+    for (let t in teamsLatest) {
+        if ((teamsLatest[t][2].includes("/>") ? teamsLatest[t][2].split("/>")[1] : teamsLatest[t][2]) == team) {
+            teamsLatest = teamsLatest[t];
+            break;
+        }
+        if (t == teamsLatest.length - 1) {
+            // reached last one and it wasnt correct either
+            alert("Add this team before giving it points!");
+            return false;
+        }
+    }
+
+    // ask for new score, showing syntax, then last tile's time, then this team's resources
+    let score = prompt("time (dd:hh:mm),wood,stone,gold (x=same)\n"
+        + save.recentTime[0] + ":" + save.recentTime[1] + ":" + save.recentTime[2]
+        + "," + teamsLatest[3] + "," + teamsLatest[4] + "," + teamsLatest[5]);
+
+    if (score == false || score == "" || score == undefined) return false;
+    score = score.split(",");
+    if (score.length < 4) return false;
+
+    // replace x's with previous
+    for (let s = 1; s <= 3; s++) {
+        if (score[s] == "x" || score[s] == "") score[s] = getTeam(team)[s + 1];
+    }
+
+    // add team name to first place
+    score.unshift(team);
+
+    // calculate points
+    let points = calculatePoints(score);
 
     // score: [points, name, time, wood, stone, gold]
     score.unshift(points);
     console.log(score);
 
     // add this score to the update we are doing
-    save.recentTime = timeB;
     save.update.push(score);
     updateTempLB(score);
+
+    save.teams[team].tiles++;
+    save.teams[team].players[player].tiles++;
+    save.teams[team].players[player].points += points;
+
+    // hide players of team, so next team can be clicked without confusion
+    ui.scorePlayers.innerHTML = ""; 
 }
 
 function updateTempLB(score) {
@@ -229,6 +316,30 @@ function updateTempLB(score) {
 
     console.log(teamName, save.templb[teamID], score);
     lbUpdated = false;
+}
+
+function renderTeamName(teamname) {
+    // team syntax: name, logo, players
+    if (save.teams == undefined && save.leaderboard.length > 0) {
+        save.teams = {};
+        for (let team of save.leaderboard) {
+            // it was originally gonna be an array, but the past few months i went from
+            // making everything hyper space optimized (caring about every byte, as much as you can in JS)
+            // to "some more space but better readability is better" and while
+            // as an array it fitted the rest of mrrp, really, this is better than ["name", ""?, [[],...]]
+            save.teams[team[0]] = {
+                name: team[0],
+                logo: "",
+                tiles: 0,
+                players: {}
+            };
+        }
+    }
+
+    let team = save.teams[teamname];
+    if (team == undefined) return "";
+
+    return (team.logo != "" ? ("<img src='images/teams/" + team.logo + "' class='teamImage' />") : "") + team.name;
 }
 
 var copyableScores = false;
@@ -342,7 +453,10 @@ function updateUI() {
 
 // setup
 ui.header.innerHTML = "MRRP " + VERSION;
+renderSeason();
 generatePatchNotes();
+
 saveLoadBackup();
+
 setInterval("updateUI()", 1000 / 15);
 setInterval("saveBackup()", 1000);
