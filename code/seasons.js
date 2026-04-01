@@ -1,7 +1,67 @@
 var season = 9;
 
+var rulesBySeason = [
+/* season 1 */ `
+x
+`,
+/* season 2 */ `
+y
+`,
+/* season 3 */ `
+Racing rules: [UPDATED - Season 3]
+- To win a point, drive your car on the current goal tile, post a screenshot,  generate and write the next goal tile
+- You must generate the next goal tile with the generator linked in the pins (send evidence)
+- The winner team can't take part for the next round
+- No cheating, obviously
+`,
+/* season 4 */ `
+Racing rules: [UPDATED - Season 4]
+- To win a point, drive your car on one of the **three** current goal tiles, post a screenshot with the tile and team name visible, generate and write the next goal tiles
+- Generate **three** goal tiles with the generator linked in the pins (send evidence)
+- The winner team can't take part for the next round
+- No cheating
+`,
+/* season 5 */ `
+Racing rules: [UPDATED - Season 5]
+- To win a point, drive your car ON the current goal tile, post a screenshot with the tile and team name visible, and another team has to be right next to your car, BOTH get points generate and write the next goal tile
+- Generate one goal tiles with the generator linked in the pins (send evidence)
+- The winner teams can't take part for the next round
+- No cheating
+`,
+/* season 6 */ `
+Racing rules: [UPDATED - Season 6]
+- To win a point, drive your car ON one of the current goal tiles, post a screenshot with the tile and team name visible, get a point and generate a new one with https://cubruce1103.github.io/tile-select/  .   The winner team can't get their own goal tile.
+- If, after 24 hours, nobody has gathered the new tile, another team (that is not the latest winner that submitted the current goal) can generate *another* goal tile with the link above. This team is not allowed to get the goal tile they generated, but other teams, including the previous winner, are.
+- No collecting points from goal coords your team has generated
+- No cheating
+`,
+/* season 7 */ `
+Racing rules: [UPDATED - Season 7]
+- To win a point, drive your car ON the current goal tile, post a screenshot with the tile and team name visible, get a point and generate a new one with https://cubruce1103.github.io/tile-select/  .   The winner team can't get their own goal tile.
+- If you collect the tile less than 12 hours after it was generated, you get 2x points!
+- No cheating
+`,
+/* season 8 */ `
+Racing rules: [UPDATED - Season 8]
+- When you enter Season 8, you have to post your team's resources
+- To win a point, drive your car ON the current goal tile (by a different team), post a screenshot with the tile and team name visible, and generate a new one with https://cubruce1103.github.io/tile-select/  .  Also provide a screenshot of your resources, to get the extra point(s) 
+- You get 1 point per tile. An extra point if you didn't collect Gold. An extra point if you didn't collect Stone. An extra point if you gained 1000 Wood. (These are based on your resources ss)
+- If you collect the tile less than 24 hours after it was generated, you get 2x points!
+- No cheating
+`,
+/* season 9 */ `
+Racing rules: [UPDATED - Season 9]
+- When you enter Season 9, you have to post your team's resources
+- To win a point, drive your car ON the current goal tile (by a different team), post a screenshot with the tile and team name visible, and generate a new one with https://cubruce1103.github.io/tile-select/  .  Also provide a screenshot of your resources, to get the extra point(s) 
+- You get 1 point per tile. An extra point if you collected 1 :stone: or less, another if 1 :gold: or less, another if you gained 500 :wood~1:. (These are based on your resources ss)
+- If you collect the tile less than 24 hours after it was generated, you get 2x points!
+- No cheating, no alts used for the race in other teams
+`,
+];
+
 function renderSeason() {
     ui.lbSeason.innerHTML = "(Season " + season + ")";
+    ui.seasonrules.innerHTML = rulesBySeason[season - 1].replaceAll("\n", "<br />");
 }
 
 function changeSeason() {

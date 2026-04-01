@@ -1,4 +1,4 @@
-const VERSION = "v1.2";
+const VERSION = "v1.3";
 
 function generatePatchNotes() {
     let current = patch_notes[VERSION];
@@ -61,5 +61,24 @@ MRRP v1.2 2026-03-01
 
 -> Other:
 - Added max. width for the updated scores
+`,
+"v1.3": `
+MRRP v1.3 2026-04-01
+-> Scores this update:
+- Added buttons to show one section at a time: points, milestones, sheet format, all (same as previous, now default)
+- Most recent score is now shown at the top left
+- Changed background of the scores to be more lime
+
+-> Season rules:
+- Added season rules to the page, shown above patch notes
+- Shows rules of the selected season
+- Seasons 3 - 9 are supported for this
+
+-> Adding new scores:
+- Added support for x+1 syntax (while x keeps the previous amount, x+1 adds 1, x+2 adds 2, etc.)
+- If the new amount is much higher or much lower than the previous, or 0, it will ask if this is correct (to prevent wrong data from typos)
+
+-> Other:
+- Added link to the tile select (top left)
 `
 }

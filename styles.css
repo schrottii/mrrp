@@ -95,3 +95,38 @@ button {
     margin-bottom: 4px;
     margin-top: -8px;
 }
+
+.lefterText {
+    margin-left: 6%;
+    text-align: right;
+}
+
+.middleText {
+    text-align: center;
+}
+
+.righterText {
+    margin-right: 6%;
+    text-align: left;
+}
+
+@media only screen and (min-width: 768px) {
+    .lefterText {
+        margin-right: 10%;
+    }
+    .righterText {
+        margin-left: 10%;
+    }
+}
+
+.tileSelectLink {
+    position: absolute;
+    left: 0%;
+    color: lightblue;
+}
+
+@media only screen and (min-width: 768px) {
+    .tileSelectLink {
+        left: 10%;
+    }
+}

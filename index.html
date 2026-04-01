@@ -14,6 +14,7 @@
 <body>
     <div style="text-align: center">
         <h3>Schrottii's <span id="header"></span></h3>
+        <a class="tileSelectLink" href="https://cubruce1103.github.io/tile-select/" target="_blank">tile select (external)</a>
         <img src="images/mrrp.png" style="width: 20%; max-width: 256px;" />
         <!-- This work is copyrighted. Copying, cloning or stealing is prohibited. -->
 
@@ -36,13 +37,23 @@
         <hr />
 
         <h4>Scores this update</h4>
-
-        <span id="scoresInfo"></span>
-        <button onclick="toggleCopyable();">Toggle copyable</button>
+        <div style="width: 100%; display: inline-block;">
+                <span id="scoresInfoMostRecent" class="lefterText">a</span>
+                <span id="scoresInfo" class="middleText"></span>
+                <span><button onclick="toggleCopyable();" class="righterText">Toggle copyable</button></span>
+        </div>
         <br style="clear: both;" />
+        
+        <span style="width: 90%;">
+            <button onclick="changeScoresDisplay('points')">Points</button>
+            <button onclick="changeScoresDisplay('milestones')">Milestones</button>
+            <button onclick="changeScoresDisplay('sheetformat')">Sheet format</button>
+            <button onclick="changeScoresDisplay('all')">All</button>
+        </span>
 
-        <div class="limitedWidth"><span id="scores"></span></div>
+        <div class="limitedWidth" style="background-color: limegreen;"><span id="scores"></span></div>
         <br />
+
         <button onclick="saveUpdate()">Save update to data</button>
         <button onclick="clearUpdate()">Clear</button>
         <hr />
@@ -52,6 +63,12 @@
         <button onclick="saveExport()"><b>Export Data</b><br />Saves current data to clipboard</button>
         <button onclick="saveImport()"><b>Import Data</b><br />Loads data from clipboard</button>
         <button onclick="saveExportFile()"><b>Export File</b><br />Exports to file, update lb first</button>
+        <hr />
+
+        <h3>Season rules</h3>
+        <div style="text-align: left;">
+            <span id="seasonrules"></span>
+        </div>
         <hr />
 
         <h3>Patch notes</h3>

@@ -5,7 +5,9 @@ var ui = {
     scorePlayers: document.getElementById("scorePlayers"),
     scores: document.getElementById("scores"),
     scoresInfo: document.getElementById("scoresInfo"),
+    scoresInfoMostRecent: document.getElementById("scoresInfoMostRecent"),
     patchnotes: document.getElementById("patchnotes"),
+    seasonrules: document.getElementById("seasonrules"),
     lbSeason: document.getElementById("lbSeason")
 };
 
@@ -259,7 +261,16 @@ function addScore(team, player) {
 
     // replace x's with previous
     for (let s = 1; s <= 3; s++) {
-        if (score[s] == "x" || score[s] == "") score[s] = getTeam(team)[s + 1];
+        if (score[s].substr(0, 2) == "x+") score[s] = parseInt(getTeam(team)[s + 1]) + parseInt(score[s].split("x+")[1]);
+        else if (score[s] == "x" || score[s] == "") score[s] = getTeam(team)[s + 1];
+    }
+
+    // check validity
+    for (let s = 1; s <= 3; s++) {
+        if (score[s] > teamsLatest[2 + s] * 9 || score[s] < teamsLatest[2 + s] / 9 || score[s] == 0) {
+            let isCorrect = confirm("Previous: " + teamsLatest[2 + s] + "\nNew: " + score[s] + "\nIs this correct? Continue? (" + ["", "Wood", "Stone", "Gold"][s] + ")");
+            if (isCorrect === false) return false;
+        }
     }
 
     // add team name to first place
@@ -281,7 +292,7 @@ function addScore(team, player) {
     save.teams[team].players[player].points += points;
 
     // hide players of team, so next team can be clicked without confusion
-    ui.scorePlayers.innerHTML = ""; 
+    ui.scorePlayers.innerHTML = "";
 }
 
 function updateTempLB(score) {
@@ -348,6 +359,12 @@ function toggleCopyable() {
     updateScores();
 }
 
+var scoresDisplayFormat = "all";
+function changeScoresDisplay(newFormat) {
+    scoresDisplayFormat = newFormat;
+    updateScores();
+}
+
 function updateScores() {
     if (save.update.length == 0) {
         ui.scores.innerHTML = "";
@@ -357,68 +374,82 @@ function updateScores() {
     let render = "";
     let score;
 
-    for (let s in save.update) {
-        // go thru list of scores, short format
-        score = save.update[s];
-        render = render + score[1] + " +" + score[0] + (s == save.update.length - 1 ? "" : ", ");
+    // POINTS
+    if (scoresDisplayFormat == "points" || scoresDisplayFormat == "all") {
+        for (let s in save.update) {
+            // go thru list of scores, short format
+            score = save.update[s];
+            render = render + score[1] + " +" + score[0] + (s == save.update.length - 1 ? "" : ", ");
+        }
     }
 
-    render = render + "<br />";
-    let teamScores = {};
-    for (let t in save.leaderboard) {
-        teamScores[save.leaderboard[t][0]] = parseInt(save.leaderboard[t][1]);
-    }
+    if (scoresDisplayFormat == "all") render = render + "<br /><br />";
 
-    let oldScore;
-    let newScore;
-    let isBig = false;
-    for (let s in save.update) {
-        score = save.update[s]; // what they gain
-        oldScore = teamScores[score[1]];
-        newScore = (oldScore + parseInt(score[0]));
-
-        if (Math.floor(newScore / 25) > Math.floor(teamScores[score[1]] / 25)) {
-            // every 25
-            isBig = (Math.floor(newScore / 25) % 4) == 0;
-            render = render + "<br />"
-                + (isBig ? "**" : "")
-                + score[1] + " has reached " + (Math.floor(newScore / 25) * 25) + " points :tada:"
-                + (isBig ? "**" : "");
+    // POINTS
+    if (scoresDisplayFormat == "milestones" || scoresDisplayFormat == "all") {
+        let teamScores = {};
+        for (let t in save.leaderboard) {
+            teamScores[save.leaderboard[t][0]] = parseInt(save.leaderboard[t][1]);
         }
 
-        if ((newScore % 1000 >= 777 && oldScore % 1000 < 777) || newScore.toString().includes("777")) {
-            render = render + "<br />:slot_machine:"
-                + score[1] + " has reached "
-                + (newScore.toString().includes("777") ? newScore : Math.floor(newScore / 1000) * 1000 + 777)
-                + " points :slot_machine:";
+        let oldScore;
+        let newScore;
+        let isBig = false;
+        let isFirst = true;
+
+        for (let s in save.update) {
+            score = save.update[s]; // what they gain
+            oldScore = teamScores[score[1]];
+            newScore = (oldScore + parseInt(score[0]));
+
+            if (Math.floor(newScore / 25) > Math.floor(teamScores[score[1]] / 25)) {
+                // every 25
+                isBig = (Math.floor(newScore / 25) % 4) == 0;
+                render = render + (!isFirst ? "<br />" : "")
+                    + (isBig ? "**" : "")
+                    + score[1] + " has reached " + (Math.floor(newScore / 25) * 25) + " points :tada:"
+                    + (isBig ? "**" : "");
+                isFirst = false;
+            }
+
+            if ((newScore % 1000 >= 777 && oldScore % 1000 < 777) || newScore.toString().includes("777")) {
+                render = render + (!isFirst ? "<br />" : "") + ":slot_machine:"
+                    + score[1] + " has reached "
+                    + (newScore.toString().includes("777") ? newScore : Math.floor(newScore / 1000) * 1000 + 777)
+                    + " points :slot_machine:";
+                isFirst = false;
+            }
+
+            teamScores[score[1]] += parseInt(score[0]);
         }
 
-        teamScores[score[1]] += parseInt(score[0]);
+        // dc formatting in html
+        if (!copyableScores) {
+            render = render.replaceAll(":**", ":</b>");
+            render = render.replaceAll("**", "<b>");
+            render = render.replaceAll(":tada:", "<img src='images/tada.png' height='24px'>");
+            render = render.replaceAll(":slot_machine:", "<img src='images/slot_machine.png' height='24px'>");
+        }
     }
 
-    // sheets
-    render = render + "<br /><br />";
-    let sep = ";";
+    if (scoresDisplayFormat == "all") render = render + "<br /><br />";
 
-    for (let s in save.update) {
-        score = save.update[s];
-        // date    time    team    tile    wood +1000        stone
-        // score: [points, name, time, wood, stone, gold]
-        // time    team    points    wood    stone    gold
-        render = render + score[2].split(":")[0] + "-" + score[2].split(":")[1] + ":" + score[2].split(":")[2]
-            + sep + score[1] + sep + score[0]
-            + sep + score[3] + sep + score[4] + sep + score[5] + "<br />";
-    }
+    if (scoresDisplayFormat == "sheetformat" || scoresDisplayFormat == "all") {
+        let sep = ";";
 
-    // dc formatting in html
-    if (!copyableScores) {
-        render = render.replaceAll(":**", ":</b>");
-        render = render.replaceAll("**", "<b>");
-        render = render.replaceAll(":tada:", "<img src='images/tada.png' height='24px'>");
-        render = render.replaceAll(":slot_machine:", "<img src='images/slot_machine.png' height='24px'>");
+        for (let s in save.update) {
+            score = save.update[s];
+            // date    time    team    tile    wood +1000        stone
+            // score: [points, name, time, wood, stone, gold]
+            // time    team    points    wood    stone    gold
+            render = render + score[2].split(":")[0] + "-" + score[2].split(":")[1] + ":" + score[2].split(":")[2]
+                + sep + score[1] + sep + score[0]
+                + sep + score[3] + sep + score[4] + sep + score[5] + "<br />";
+        }
     }
 
     ui.scoresInfo.innerHTML = save.update.length + " new scores" + ((save.templb.length == 0) ? " (unsaved)" : " (saved)");
+    ui.scoresInfoMostRecent.innerHTML = save.update[save.update.length - 1];
     ui.scores.innerHTML = render;
 }
 
