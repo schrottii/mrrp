@@ -1,4 +1,4 @@
-var season = 9;
+var season = 10;
 
 var rulesBySeason = [
 /* season 1 */ `
@@ -57,6 +57,15 @@ Racing rules: [UPDATED - Season 9]
 - If you collect the tile less than 24 hours after it was generated, you get 2x points!
 - No cheating, no alts used for the race in other teams
 `,
+/* season 10 */ `
+**[Season 10]** Racing rules:
+- When you enter Season 10, you have to post your team's resources
+- To win a point, drive your car ON the current goal tile (by a different team), post a screenshot with the tile and team name visible, and generate a new one with https://cubruce1103.github.io/tile-select/  .  Also provide a screenshot of your resources, to get the extra point(s) 
+- You get 1 point per tile. An extra point if you collected 0 :stone:, another if you collected 0 :gold:, but if one of them went up by only 1, you get 1 of those 2 extra points. Another extra point if you gained 500 :wood~1: since your last tile. (These are based on your resources ss) (= 8 points max.)
+- If you collect the tile less than 24 hours after it was generated, you get 2x points!
+- No cheating, no alts used for the race in other teams
+- **New:** sometimes, Demon Tiles spawn. They are much harder, but optional (normal tiles continue as usual). You get 20 points for getting a demon tile (and do not generate a new one). Extra +5 points if it spawned less than 2 hours ago, and extra +5 points if the last tile your team got was less than 4 hours ago. (= 30 points max.)
+`
 ];
 
 function renderSeason() {
@@ -84,6 +93,8 @@ function calculatePoints(score) {
             return calculateSeason8(score);
         case 9:
             return calculateSeason9(score);
+        case 10:
+            return calculateSeason10(score);
     }
 }
 
@@ -112,6 +123,29 @@ function calculateSeason9(score) {
     if (parseInt(score[2]) >= parseInt(prev[2]) + 500) points += 1;
     if (score[3] == prev[3] || score[3] == parseInt(prev[3]) + 1) points += 1;
     if (score[4] == prev[4] || score[4] == parseInt(prev[4]) + 1) points += 1;
+
+    // x2 if <24h
+    let hours = calcTileHours(score);
+    if (hours < 24) points *= 2;
+
+    return points;
+}
+
+function calculateSeason10(score) {
+    let team = score[0];
+    let points = 1;
+
+    // 1000 wood, max 1 stone, max 1 gold (only one of them 1) rules
+    let prev = getTeam(team);
+    if (parseInt(score[2]) >= parseInt(prev[2]) + 500) points += 1;
+
+    let max1 = false;
+    if (score[3] == prev[3]) points += 1;
+    if (score[3] == parseInt(prev[3]) + 1) {
+        points += 1;
+        max1 = true;
+    }
+    if (score[4] == prev[4] || (score[4] == parseInt(prev[4]) + 1) && max1 === false) points += 1;
 
     // x2 if <24h
     let hours = calcTileHours(score);

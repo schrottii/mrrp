@@ -55,13 +55,17 @@ function today() {
     let date = new Date();
     let month = (date.getUTCMonth() + 1);
     if (month < 10) month = "0" + month;
-    return date.getUTCFullYear() + "-" + month + "-" +  date.getUTCDate();
+    let day = date.getUTCDate();
+    if (day < 10) day = "0" + day;
+    return date.getUTCFullYear() + "-" + month + "-" + day;
 }
 
 function saveExportFile() {
+    let amountOfPoints = save.leaderboard[0][1];
     let temporaryFile = document.createElement('a');
+
     temporaryFile.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(saveSave()));
-    temporaryFile.setAttribute('download', "MRRP_backup_" + save.leaderboard[0][1] + "P_" + today() + ".txt");
+    temporaryFile.setAttribute('download', today() + "_" + "MRRP_" + amountOfPoints  + ".txt");
 
     temporaryFile.style.display = 'none';
     document.body.appendChild(temporaryFile);

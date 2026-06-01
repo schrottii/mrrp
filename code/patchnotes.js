@@ -1,4 +1,4 @@
-const VERSION = "v1.3";
+const VERSION = "v1.4";
 
 function generatePatchNotes() {
     let current = patch_notes[VERSION];
@@ -80,5 +80,25 @@ MRRP v1.3 2026-04-01
 
 -> Other:
 - Added link to the tile select (top left)
+`,
+"v1.4": `
+MRRP v1.4 2026-06-01
+-> Player Leaderboards:
+- See how well each player did!
+- Accessed with the new "Player Leaderboard" tool/button
+- Includes points, name, tiles, p/t (points per tile), demon tiles
+- Click again to see players in multiple teams combined
+
+-> Demon Tiles:
+- Added support for demon tiles
+- Accessed by typing "demon" instead of the usual score info
+- 20 points, +5 based on the team's recent tile time (automatically calculated), +5 based on how long it took (manually asked)
+- Amount of demon tiles collected is saved for teams and players
+
+-> Other:
+- Added support for season 10
+- If a player exists in multiple teams, the older ones get grayed out when the player does a score in their current team
+- Each team's most recent time is now saved (and demon tiles)
+- Changed save file name (YYYY-MM-DD_MRRP_POINTS format)
 `
 }

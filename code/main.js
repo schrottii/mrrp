@@ -11,6 +11,11 @@ var ui = {
     lbSeason: document.getElementById("lbSeason")
 };
 
+var copyableScores = false;
+var scoresDisplayFormat = "all";
+
+var lbUpdated = false;
+
 function getTeam(name) {
     let lb = currentLB();
 
@@ -21,8 +26,6 @@ function getTeam(name) {
 }
 
 // LEADERBOARD STUFF
-
-let lbUpdated = false;
 
 function currentLB() {
     // this is a bit nasty but alright...
@@ -144,8 +147,10 @@ function sortLeaderboard() {
 
     let isTemp = save.templb.length > 0 ? true : false;
 
+    /*
     if (save.templb.length > 0) console.log("sorting temp lb");
     else console.log("sorting leaderboard");
+    */
 
     for (let t in clb) {
         lbUnsorted.push(clb[t]);
@@ -184,7 +189,18 @@ function calcTileHours(score) {
     for (let t in timeA) timeA[t] = parseInt(timeA[t]);
     for (let t in timeB) timeB[t] = parseInt(timeB[t]);
 
+    // set recent time
+    save.recentTime = timeB;
+    // return hours (for point calc)
+    return calcHours(timeA, timeB);
+}
+
+function calcHours(timeA, timeB) {
+    // general function for time between 2 [dd, hh, mm]
+    // A = before, B = after
+
     let hours = 0;
+
     if (timeA[0] == timeB[0]) {
         // same day
         hours = timeB[1] - timeA[1] + ((timeB[2] - timeA[2]) / 60);
@@ -193,28 +209,14 @@ function calcTileHours(score) {
         // different days
         // either next month (cba to account for month lengths) or next day
         if (timeB[0] == 1 && (timeA[0] >= 28)
-            || timeB[0] == timeA[0] + 1) hours = (timeB[1] + 24) - timeA[1] + ((timeB[2] - timeA[2]) / 60);
+            || timeB[0] == timeA[0] + 1) {
+            // account for day change
+            hours = (timeB[1] + 24) - timeA[1] + ((timeB[2] - timeA[2]) / 60);
+        }
         else hours = 420;
     }
 
-    save.recentTime = timeB; // do we really want this changed here, and every time?
-    return hours;
-}
-
-// UPDATE STUFF
-function showTeamPlayers(team) {
-    let render = "";
-    let player;
-
-    for (let pl in save.teams[team].players) {
-        player = save.teams[team].players[pl];
-        console.log(pl, player)
-        render = render + "<button onclick='addScore(`" + team + "`, `" + player.name + "`)'>" + player.name + "</button>";
-    }
-
-    render = render + "<button onclick='createPlayer(`" + team + "`)'>Create Player</button>";
-
-    ui.scorePlayers.innerHTML = render;
+    return hours; // returns unrounded hours
 }
 
 function createPlayer(team) {
@@ -251,9 +253,16 @@ function addScore(team, player) {
     }
 
     // ask for new score, showing syntax, then last tile's time, then this team's resources
+    // expects something like:
+    // 31:18:56,3381,x,85
     let score = prompt("time (dd:hh:mm),wood,stone,gold (x=same)\n"
         + save.recentTime[0] + ":" + save.recentTime[1] + ":" + save.recentTime[2]
         + "," + teamsLatest[3] + "," + teamsLatest[4] + "," + teamsLatest[5]);
+
+    if (score === "demon") {
+        addDemonScore(team, player);
+        return true;
+    }
 
     if (score == false || score == "" || score == undefined) return false;
     score = score.split(",");
@@ -290,9 +299,82 @@ function addScore(team, player) {
     save.teams[team].tiles++;
     save.teams[team].players[player].tiles++;
     save.teams[team].players[player].points += points;
+    save.teams[team].lastTile = score[2]; // last time team got a tile
+
+    checkPlayer(player);
 
     // hide players of team, so next team can be clicked without confusion
     ui.scorePlayers.innerHTML = "";
+}
+
+function addDemonScore(team, player) {
+    let time = prompt("time (dd:hh:mm)");
+
+    let hoursReq = confirm("Did it take less than 2 hours?");
+    //let teamTileReq = confirm("Did the team get a tile in the last 4 hours?");
+    let teamTileReq = false;
+    let lastTeamTile = save.teams[team].lastTile; // dd:hh:mm
+    if (lastTeamTile != undefined) {
+        teamTileReq = calcHours(lastTeamTile, time) < 2;
+    }
+
+    let points = 20;
+    if (hoursReq === true) points += 5;
+    if (teamTileReq === true) points += 5;
+
+    // score: [points, name, time, wood, stone, gold]
+    let score = [points, team, time, getTeam(team)[2], getTeam(team)[3], getTeam(team)[4]]
+
+    save.update.push(score);
+    updateTempLB(score);
+
+    save.teams[team].tiles++;
+    save.teams[team].players[player].tiles++;
+    save.teams[team].players[player].points += points;
+
+    if (save.teams[team].demontiles == undefined) save.teams[team].demontiles = 0;
+    save.teams[team].demontiles++;
+    if (save.teams[team].players[player].demontiles == undefined) save.teams[team].players[player].demontiles = 0;
+    save.teams[team].players[player].demontiles++;
+
+    checkPlayer(team, player);
+}
+
+function checkPlayer(team, player) {
+    let teamsPlayerIsIn = [];
+    for (let t in save.teams) {
+        for (let p in save.teams[t].players) {
+            if (p == player) teamsPlayerIsIn.push(t);
+        }
+    }
+
+    // don't bother if player exists only once
+    if (teamsPlayerIsIn.length < 2) return false;
+
+    // do bother...
+    for (let t of teamsPlayerIsIn) {
+        save.teams[t].players[player].active = false;
+    }
+    save.teams[team].players[player].active = true;
+    return true;
+}
+
+// UPDATE STUFF
+function showTeamPlayers(team) {
+    let render = "";
+    let player;
+
+    for (let pl in save.teams[team].players) {
+        player = save.teams[team].players[pl];
+        //console.log(pl, player)
+        render = render + "<button " + 
+        (player.active !== undefined && player.active === false ? "style='background-color: gray;' " : "")
+        + "onclick='addScore(`" + team + "`, `" + player.name + "`)'>" + player.name + "</button>";
+    }
+
+    render = render + "<button onclick='createPlayer(`" + team + "`)'>Create Player</button>";
+
+    ui.scorePlayers.innerHTML = render;
 }
 
 function updateTempLB(score) {
@@ -353,14 +435,12 @@ function renderTeamName(teamname) {
     return (team.logo != "" ? ("<img src='images/teams/" + team.logo + "' class='teamImage' />") : "") + team.name;
 }
 
-var copyableScores = false;
 function toggleCopyable() {
     copyableScores = !copyableScores;
     updateScores();
 }
 
-var scoresDisplayFormat = "all";
-function changeScoresDisplay(newFormat) {
+function changeScoresDisplay(newFormat) {MRRP
     scoresDisplayFormat = newFormat;
     updateScores();
 }
