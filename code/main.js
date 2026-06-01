@@ -440,7 +440,7 @@ function toggleCopyable() {
     updateScores();
 }
 
-function changeScoresDisplay(newFormat) {MRRP
+function changeScoresDisplay(newFormat) {
     scoresDisplayFormat = newFormat;
     updateScores();
 }
