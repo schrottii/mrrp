@@ -316,7 +316,7 @@ function addDemonScore(team, player) {
     let teamTileReq = false;
     let lastTeamTile = save.teams[team].lastTile; // dd:hh:mm
     if (lastTeamTile != undefined) {
-        teamTileReq = calcHours(lastTeamTile, time) < 2;
+        teamTileReq = calcHours(lastTeamTile.split(":"), time.split(":")) < 2;
     }
 
     let points = 20;
