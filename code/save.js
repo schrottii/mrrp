@@ -61,7 +61,7 @@ function today() {
 }
 
 function saveExportFile() {
-    let amountOfPoints = save.leaderboard[0][1];
+    let amountOfPoints = save.templb.length > 0 && save.templb[0].length > 1 ? save.templb[0][1] : save.leaderboard[0][1];
     let temporaryFile = document.createElement('a');
 
     temporaryFile.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(saveSave()));

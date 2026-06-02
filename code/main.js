@@ -58,6 +58,7 @@ function addTeam() {
     }
 
     lb.push(team);
+    if (save.teams == undefined) save.teams = {};
     save.teams[teamName] = {
         name: teamName,
         logo: "",
