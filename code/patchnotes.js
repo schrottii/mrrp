@@ -1,4 +1,4 @@
-const VERSION = "v1.4";
+const VERSION = "v1.4.1";
 
 function generatePatchNotes() {
     let current = patch_notes[VERSION];
@@ -100,5 +100,12 @@ MRRP v1.4 2026-06-01
 - If a player exists in multiple teams, the older ones get grayed out when the player does a score in their current team
 - Each team's most recent time is now saved (and demon tiles)
 - Changed save file name (YYYY-MM-DD_MRRP_POINTS format)
+`,
+    "v1.4.1": `
+- Added support for season 11
+- Added previously missing rules for season 2 (season 1 doesn't seem to have them written out anywhere, added the introduction text for that)
+- Added footer at the bottom with copyright, credits, and link to website
+- Limited width of rules and patch notes text
+- Changed description of Export File button
 `
 }

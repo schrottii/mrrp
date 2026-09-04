@@ -1,11 +1,23 @@
-var season = 10;
+var season = 11;
 
 var rulesBySeason = [
 /* season 1 */ `
-x
+Welcome to the new map game "Forest races"!
+The goal is to be the first team who will take their car to the announced coordinates on the map
+
+The winner team is choosing the next coordinates and is not taking part in the next race (you can choose only empty tiles with no cars on them)
+
+To prove your team was the first, just post a screenshot where your team's car will be in the blue square and the right coordinates will be shown (like on the example)
+
+This game is for fun but not for prize,  just show other teams who is the fastest!
 `,
 /* season 2 */ `
-y
+Racing rules:
+- To win a point, drive your car on the current goal tile, post a screenshot and write the next goal tile (or send it as a screenshot)
+- Goal tiles must be empty
+- Do not select very easy or very hard tiles to keep it fair
+- The winner team can't take part for the next round
+- No cheating, obviously
 `,
 /* season 3 */ `
 Racing rules: [UPDATED - Season 3]
@@ -65,6 +77,14 @@ Racing rules: [UPDATED - Season 9]
 - If you collect the tile less than 24 hours after it was generated, you get 2x points!
 - No cheating, no alts used for the race in other teams
 - **New:** sometimes, Demon Tiles spawn. They are much harder, but optional (normal tiles continue as usual). You get 20 points for getting a demon tile (and do not generate a new one). Extra +5 points if it spawned less than 2 hours ago, and extra +5 points if the last tile your team got was less than 4 hours ago. (= 30 points max.)
+`,
+/* season 11 */ `
+**[Season 11]** __Racing rules:__
+- **Enter:** When you enter Season 11, you have to post your team's resources before going for the first tile. The team leader does not need to be involved.
+- **Score:** To win a point, drive your car ON the current goal tile (by a different team), post a screenshot with the tile and team name visible, and generate a new one with https://cubruce1103.github.io/tile-select/  .  Also provide a screenshot of your resources, to get the extra point(s). If the goal tile is blocked by a non-participating car, any adjacent tiles are valid.
+- **Points:** You get 1 base point per tile. An extra point if you collected 0 :stone:, another if you collected 0 :gold:, but if only one of them went up by only 1, you get at least 1 of those 2 extra points. Another extra point if you gained 500 :wood~1: since your last tile. If you collect the tile in less than 12 hours, you get 2x points! (These are based on your resources ss, = 8 points max.)
+- **Fairness:** No cheating, no alts used for the race in other teams.
+- **Demons:** Sometimes, Demon Tiles spawn. They are much harder, but optional (normal tiles continue as usual). You get 20 points for getting a demon tile (and do not generate a new tile). Extra +5 points if it spawned less than 4 hours ago, and extra +5 points if the last tile your team got was less than 4 hours ago. (= 30 points max.)
 `
 ];
 
@@ -94,6 +114,8 @@ function calculatePoints(score) {
         case 9:
             return calculateSeason9(score);
         case 10:
+            return calculateSeason10(score);
+        case 11:
             return calculateSeason10(score);
     }
 }
@@ -147,9 +169,10 @@ function calculateSeason10(score) {
     }
     if (score[4] == prev[4] || (score[4] == parseInt(prev[4]) + 1) && max1 === false) points += 1;
 
-    // x2 if <24h
+    // x2 if <24h (season 11: 12h)
     let hours = calcTileHours(score);
-    if (hours < 24) points *= 2;
+    if (season == 11 && hours < 24) points *= 2;
+    else if (season == 10 && hours < 12) points *= 2;
 
     return points;
 }

@@ -311,12 +311,12 @@ function addScore(team, player) {
 function addDemonScore(team, player) {
     let time = prompt("time (dd:hh:mm)");
 
-    let hoursReq = confirm("Did it take less than 2 hours?");
+    let hoursReq = confirm("Did it take less than " + (season == 10 ? "2" : "4") + " hours?");
     //let teamTileReq = confirm("Did the team get a tile in the last 4 hours?");
     let teamTileReq = false;
     let lastTeamTile = save.teams[team].lastTile; // dd:hh:mm
     if (lastTeamTile != undefined) {
-        teamTileReq = calcHours(lastTeamTile.split(":"), time.split(":")) < 2;
+        teamTileReq = calcHours(lastTeamTile.split(":"), time.split(":")) < 4;
     }
 
     let points = 20;
